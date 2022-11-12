@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit <%=coffeeshop.title%></title>
+  </head>
+  <body>
+    <h1>Edit <%=coffeeshop.title%></h1>
+    <form action="/coffeeshops/<%=coffeeshop._id%>?_method=PUT" method="POST">
+      <div>
+        <label for="title">Coffee shop name</label>
+        <input
+          type="text"
+          id="title"
+          name="coffeeshop[title]"
+          value="<%=coffeeshop.title%> "
+        />
+      </div>
+      <div>
+        <label for="location">Location</label>
+        <input
+          type="text"
+          id="location"
+          name="coffeeshop[location]"
+          value="<%=coffeeshop.location%> "
+        />
+      </div>
+      <button>Submit Change</button>
+    </form>
+    <a href="/coffeeshops/<%=coffeeshop._id%> "
+      >Back to <%=coffeeshop.title%></a
+    >
+  </body>
+</html>

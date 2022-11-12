@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=coffeeshop.title%></title>
+  </head>
+  <body>
+    <h1><%=coffeeshop.title%></h1>
+    <h2><%=coffeeshop.location%></h2>
+    <footer>
+      <a href="/coffeeshops/<%=coffeeshop._id%>/edit">Edit coffee shop</a>
+      <form
+        action="/coffeeshops/<%=coffeeshop._id%>?_method=DELETE"
+        method="POST"
+      >
+        <button>Delete coffee shop</button>
+      </form>
+      <a href="/coffeeshops">Back to all coffee shops</a>
+    </footer>
+  </body>
+</html>

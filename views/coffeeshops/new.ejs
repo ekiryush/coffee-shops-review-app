@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add new coffee shop</title>
+  </head>
+  <body>
+    <h1>Add new coffee shop</h1>
+    <form action="/coffeeshops" method="POST">
+      <div>
+        <label for="title">Coffee shop name</label>
+        <input type="text" id="title" name="coffeeshop[title]" />
+      </div>
+      <div>
+        <label for="location">Location</label>
+        <input type="text" id="location" name="coffeeshop[location]" />
+      </div>
+      <button>Add Coffee Shop</button>
+    </form>
+    <a href="/coffeeshops">Back to all coffee shops</a>
+  </body>
+</html>
