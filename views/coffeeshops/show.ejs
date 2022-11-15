@@ -1,22 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%=coffeeshop.title%></title>
-  </head>
-  <body>
-    <h1><%=coffeeshop.title%></h1>
-    <h2><%=coffeeshop.location%></h2>
-    <footer>
-      <a href="/coffeeshops/<%=coffeeshop._id%>/edit">Edit coffee shop</a>
+<% layout('layouts/boilerplate.ejs') -%>
+
+<div class="col-md-6 offset-2">
+  <div class="card mt-4">
+    <img
+      class="card-img-top"
+      src="<%=coffeeshop.image%> "
+      alt="Image of <%=coffeeshop.title%>"
+    />
+    <div class="card-body">
+      <h5 class="card-title"><%=coffeeshop.title%></h5>
+      <p class="card-text"><%=coffeeshop.description%></p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-muted"><%=coffeeshop.location%></li>
+    </ul>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">$<%=coffeeshop.price%> per beverage</li>
+    </ul>
+    <div class="card-body">
+      <a
+        class="card-link d-inline"
+        href="/coffeeshops/<%=coffeeshop._id%>/edit"
+      >
+        <button class="btn btn-info">Edit</button></a
+      >
+
       <form
         action="/coffeeshops/<%=coffeeshop._id%>?_method=DELETE"
         method="POST"
+        class="d-inline"
       >
-        <button>Delete coffee shop</button>
+        <button class="btn btn-danger">Delete</button>
       </form>
-      <a href="/coffeeshops">Back to all coffee shops</a>
-    </footer>
-  </body>
-</html>
+
+      <a class="card-link d-inline" href="/coffeeshops"
+        ><button class="btn btn-secondary">Back to all</button></a
+      >
+    </div>
+    <div class="card-footer text-muted">2 days ago</div>
+  </div>
+</div>

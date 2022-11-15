@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
+const ejsMate = require("ejs-mate");
 const CoffeeShop = require("./models/coffeeshop.js");
 
 mongoose.connect("mongodb://localhost:27017/coffee-shops", {
@@ -16,6 +17,8 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
+app.engine("ejs", ejsMate);
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -23,26 +26,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 app.get("/", (req, res) => {
-  res.render("home.ejs");
+  res.render("home.ejs", { title: "Coffee Shops" });
 });
 
 app.get("/coffeeshops", async (req, res) => {
   const coffeeshops = await CoffeeShop.find({});
-  res.render("coffeeshops/index", { coffeeshops });
+  res.render("coffeeshops/index", { coffeeshops, title: "Coffee Shops" });
 });
 
 app.get("/coffeeshops/new", (req, res) => {
-  res.render("coffeeshops/new");
+  res.render("coffeeshops/new", { title: "New Coffee Shop" });
 });
 
 app.get("/coffeeshops/:id", async (req, res) => {
   const coffeeshop = await CoffeeShop.findById(req.params.id);
-  res.render("coffeeshops/show", { coffeeshop });
+  res.render("coffeeshops/show", { coffeeshop, title: coffeeshop.title });
 });
 
 app.get("/coffeeshops/:id/edit", async (req, res) => {
   const coffeeshop = await CoffeeShop.findById(req.params.id);
-  res.render("coffeeshops/edit", { coffeeshop });
+  res.render("coffeeshops/edit", {
+    coffeeshop,
+    title: `Edit ${coffeeshop.title}`,
+  });
 });
 
 app.post("/coffeeshops", async (req, res) => {
@@ -53,8 +59,8 @@ app.post("/coffeeshops", async (req, res) => {
 
 app.put("/coffeeshops/:id", async (req, res) => {
   const { id } = req.params;
-  await CoffeeShop.findOneAndUpdate(id, req.body.coffeeshop);
-  res.redirect(`/coffeeshops/${id}`);
+  await CoffeeShop.findByIdAndUpdate(id, req.body.coffeeshop);
+  res.redirect(`/coffeeshops/${req.params.id}`);
 });
 
 app.delete("/coffeeshops/:id", async (req, res) => {

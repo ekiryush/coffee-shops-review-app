@@ -6,6 +6,7 @@ const CoffeeShopSchema = new mongoose.Schema({
   location: String,
   beverage: String,
   price: Number,
+  image: String,
 });
 
 module.exports = mongoose.model("CoffeeShop", CoffeeShopSchema);
