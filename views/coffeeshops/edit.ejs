@@ -5,7 +5,8 @@
   <form
     action="/coffeeshops/<%=coffeeshop._id%>?_method=PUT"
     method="POST"
-    class="mt-3"
+    class="mt-3 validated-form"
+    novalidate
   >
     <div class="form-group mb-3">
       <label for="title">Coffee shop name</label>
@@ -17,6 +18,8 @@
         value="<%=coffeeshop.title%>"
         name="coffeeshop[title]"
       />
+      <div class="valid-feedback">Title looks good!</div>
+      <div class="invalid-feedback">Please provide a valid title.</div>
     </div>
     <div class="form-group mb-3">
       <label for="location">Location</label>
@@ -27,6 +30,8 @@
         value="<%=coffeeshop.location%>"
         name="coffeeshop[location]"
       />
+      <div class="valid-feedback">Title looks good!</div>
+      <div class="invalid-feedback">Please provide a valid title.</div>
     </div>
     <div class="form-group mb-3">
       <label for="title">Image Upload</label>
@@ -38,6 +43,8 @@
         value="<%=coffeeshop.image%>"
         name="coffeeshop[image]"
       />
+      <div class="valid-feedback">Title looks good!</div>
+      <div class="invalid-feedback">Please provide a valid title.</div>
     </div>
     <div class="form-group mb-3">
       <label for="price">Price</label>
@@ -53,6 +60,8 @@
           value="<%=coffeeshop.price%>"
           name="coffeeshop[price]"
         />
+        <div class="valid-feedback">Title looks good!</div>
+        <div class="invalid-feedback">Please provide a valid title.</div>
       </div>
     </div>
     <div class="form-group mb-3">
@@ -67,13 +76,15 @@
       >
 <%=coffeeshop.description%></textarea
       >
-      <button type="submit" class="mt-3 btn btn-success">Submit change</button>
-
-      <a
-        href="/coffeeshops/<%=coffeeshop._id%>"
-        class="mt-3 btn btn-light d-block"
-        >Back to <%=coffeeshop.title%></a
-      >
+      <div class="valid-feedback">Title looks good!</div>
+      <div class="invalid-feedback">Please provide a valid title.</div>
     </div>
+    <button type="submit" class="mt-3 btn btn-success">Submit change</button>
+
+    <a
+      href="/coffeeshops/<%=coffeeshop._id%>"
+      class="mt-3 btn btn-light d-block"
+      >Back to <%=coffeeshop.title%></a
+    >
   </form>
 </div>

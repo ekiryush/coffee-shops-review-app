@@ -2,7 +2,7 @@
 
 <div class="md-col-6 offset-2">
   <h1 class="mt-3 text-center">Add new coffee shop</h1>
-<form action="/coffeeshops" method="POST" class="mt-3">
+<form action="/coffeeshops" method="POST" class="mt-3 validated-form" novalidate>
   
     <div class="form-group mb-3">
       <label for="title">Coffee shop name</label>
@@ -13,18 +13,34 @@
         aria-describedby="title"
         placeholder="Enter title"
         name="coffeeshop[title]"
+        required
       />
+      <div class="valid-feedback">
+        Title looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please provide a valid title.
+        </div>
     </div>
+    
     <div class="form-group mb-3">
       <label for="location">Location</label>
       <input
         type="text"
         class="form-control"
         id="location"
-        placeholder="Location"
+        placeholder="Enter location"
         name="coffeeshop[location]"
+        required
       />
+      <div class="valid-feedback">
+        Location looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please provide a valid location.
+        </div>
     </div>
+   
     <div class="form-group mb-3">
       <label for="title">Image Upload</label>
       <input
@@ -34,7 +50,14 @@
         aria-describedby="title"
         placeholder="Enter url"
         name="coffeeshop[image]"
+        required
       />
+      <div class="valid-feedback">
+        Image looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please provide a valid image url.
+        </div>
     </div>
     <div class="form-group mb-3">
       <label for="price">Price</label>
@@ -49,7 +72,14 @@
           step='any'
           placeholder="0.00"
           name="coffeeshop[price]"
+          required
         />
+        <div class="valid-feedback">
+          Price looks good!
+          </div>
+          <div class="invalid-feedback">
+            Please provide a valid price.
+          </div>
       </div>
     </div>
     <div class="form-group mb-3">
@@ -61,11 +91,19 @@
         aria-describedby="description"
         placeholder="Please type here"
         name="coffeeshop[description]"
+        required
       /></textarea>
+      <div class="valid-feedback">
+        Description looks good!
+        </div>
+        <div class="invalid-feedback">
+          Please provide a valid description.
+        </div>
+      </div>
     <button type="submit" class="mt-3 btn btn-success">Add Coffee Shop</button>
     
     <a href="/coffeeshops" class='mt-3 btn btn-light d-block'>Back to all coffee shops</a>
 
-  </div>
+ 
 </form>
 
