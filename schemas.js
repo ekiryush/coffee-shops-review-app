@@ -11,4 +11,12 @@ const coffeeshopSchema = Joi.object({
   }).required(),
 });
 
+const reviewSchema = Joi.object({
+  review: Joi.object({
+    body: Joi.string().required(),
+    rating: Joi.number().required().min(1).max(5),
+  }).required(),
+});
+
 module.exports.coffeeshopSchema = coffeeshopSchema;
+module.exports.reviewSchema = reviewSchema;

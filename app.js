@@ -4,10 +4,11 @@ const path = require("path");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
-const { coffeeshopSchema } = require("./schemas.js");
+const { coffeeshopSchema, reviewSchema } = require("./schemas.js");
 const catchErrAsync = require("./utilities/catchErrAsync");
 const ExpressError = require("./utilities/ExpressError");
 const CoffeeShop = require("./models/coffeeshop.js");
+const Review = require("./models/review.js");
 
 mongoose.connect("mongodb://localhost:27017/coffee-shops", {
   useNewURLParser: true,
@@ -38,6 +39,17 @@ const validateCoffeeshop = (req, res, next) => {
   }
 };
 
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  if (error) {
+    console.log(error);
+    const message = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(message, 400);
+  } else {
+    next();
+  }
+};
+
 app.get("/", (req, res) => {
   res.render("home.ejs");
 });
@@ -58,9 +70,9 @@ app.get(
   "/coffeeshops/:id",
   catchErrAsync(async (req, res) => {
     const { id } = req.params;
-    console.log(req.params);
-    console.log(id);
-    const coffeeshop = await CoffeeShop.findById(id);
+    const coffeeshop = await (await CoffeeShop.findById(id)).populate(
+      "reviews"
+    );
     res.render("coffeeshops/show", { coffeeshop });
   })
 );
@@ -102,6 +114,31 @@ app.delete(
     const { id } = req.params;
     const coffeeshop = await CoffeeShop.findByIdAndDelete(id);
     res.redirect("/coffeeshops");
+  })
+);
+
+//Review routes
+app.post(
+  "/coffeeshops/:id/reviews",
+  validateReview,
+  catchErrAsync(async (req, res) => {
+    const coffeeshop = await CoffeeShop.findById(req.params.id);
+    const newReview = new Review(req.body.review);
+    coffeeshop.reviews.push(newReview);
+    await newReview.save();
+    await coffeeshop.save();
+    res.redirect(`/coffeeshops/${req.params.id}`);
+  })
+);
+
+app.delete(
+  "/coffeeshops/:id/reviews/:reviewid",
+  catchErrAsync(async (req, res) => {
+    await CoffeeShop.findByIdAndUpdate(req.params.id, {
+      $pull: { reviews: req.params.reviewid },
+    });
+    await Review.findByIdAndDelete(req.params.reviewid);
+    res.redirect(`/coffeeshops/${req.params.id}`);
   })
 );
 
