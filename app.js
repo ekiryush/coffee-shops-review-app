@@ -4,11 +4,12 @@ const path = require("path");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
-const { coffeeshopSchema, reviewSchema } = require("./schemas.js");
-const catchErrAsync = require("./utilities/catchErrAsync");
+const session = require("express-session");
+const flash = require("connect-flash");
 const ExpressError = require("./utilities/ExpressError");
-const CoffeeShop = require("./models/coffeeshop.js");
-const Review = require("./models/review.js");
+
+const coffeeshops = require("./routes/coffeeshops");
+const reviews = require("./routes/reviews");
 
 mongoose.connect("mongodb://localhost:27017/coffee-shops", {
   useNewURLParser: true,
@@ -28,119 +29,33 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
 
-const validateCoffeeshop = (req, res, next) => {
-  const { error } = coffeeshopSchema.validate(req.body);
-  if (error) {
-    const message = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(message, 400);
-  } else {
-    next();
-  }
+const sessionConfig = {
+  secret: "thisshouldbeabettersecret!",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
 };
+app.use(session(sessionConfig));
+app.use(flash());
 
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    console.log(error);
-    const message = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(message, 400);
-  } else {
-    next();
-  }
-};
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
+
+app.use("/coffeeshops", coffeeshops);
+app.use("/coffeeshops/:id/reviews", reviews);
 
 app.get("/", (req, res) => {
   res.render("home.ejs");
 });
-
-app.get(
-  "/coffeeshops",
-  catchErrAsync(async (req, res) => {
-    const coffeeshops = await CoffeeShop.find({});
-    res.render("coffeeshops/index", { coffeeshops });
-  })
-);
-
-app.get("/coffeeshops/new", (req, res) => {
-  res.render("coffeeshops/new");
-});
-
-app.get(
-  "/coffeeshops/:id",
-  catchErrAsync(async (req, res) => {
-    const { id } = req.params;
-    const coffeeshop = await (await CoffeeShop.findById(id)).populate(
-      "reviews"
-    );
-    res.render("coffeeshops/show", { coffeeshop });
-  })
-);
-
-app.get(
-  "/coffeeshops/:id/edit",
-  catchErrAsync(async (req, res) => {
-    const coffeeshop = await CoffeeShop.findById(req.params.id);
-    res.render("coffeeshops/edit", {
-      coffeeshop,
-      title: `Edit ${coffeeshop.title}`,
-    });
-  })
-);
-
-app.post(
-  "/coffeeshops",
-  validateCoffeeshop,
-  catchErrAsync(async (req, res) => {
-    const newCoffeeshop = new CoffeeShop(req.body.coffeeshop);
-    await newCoffeeshop.save();
-    res.redirect(`/coffeeshops/${newCoffeeshop._id}`);
-  })
-);
-
-app.put(
-  "/coffeeshops/:id",
-  validateCoffeeshop,
-  catchErrAsync(async (req, res) => {
-    const { id } = req.params;
-    await CoffeeShop.findByIdAndUpdate(id, req.body.coffeeshop);
-    res.redirect(`/coffeeshops/${req.params.id}`);
-  })
-);
-
-app.delete(
-  "/coffeeshops/:id",
-  catchErrAsync(async (req, res) => {
-    const { id } = req.params;
-    const coffeeshop = await CoffeeShop.findByIdAndDelete(id);
-    res.redirect("/coffeeshops");
-  })
-);
-
-//Review routes
-app.post(
-  "/coffeeshops/:id/reviews",
-  validateReview,
-  catchErrAsync(async (req, res) => {
-    const coffeeshop = await CoffeeShop.findById(req.params.id);
-    const newReview = new Review(req.body.review);
-    coffeeshop.reviews.push(newReview);
-    await newReview.save();
-    await coffeeshop.save();
-    res.redirect(`/coffeeshops/${req.params.id}`);
-  })
-);
-
-app.delete(
-  "/coffeeshops/:id/reviews/:reviewid",
-  catchErrAsync(async (req, res) => {
-    await CoffeeShop.findByIdAndUpdate(req.params.id, {
-      $pull: { reviews: req.params.reviewid },
-    });
-    await Review.findByIdAndDelete(req.params.reviewid);
-    res.redirect(`/coffeeshops/${req.params.id}`);
-  })
-);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page not found", 404));
