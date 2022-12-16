@@ -4,6 +4,7 @@ const catchErrAsync = require("../utilities/catchErrAsync");
 const ExpressError = require("../utilities/ExpressError");
 const CoffeeShop = require("../models/coffeeshop.js");
 const { coffeeshopSchema } = require("../schemas.js");
+const { isLoggedIn } = require("../middleware");
 
 const validateCoffeeshop = (req, res, next) => {
   const { error } = coffeeshopSchema.validate(req.body);
@@ -23,7 +24,7 @@ router.get(
   })
 );
 
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("coffeeshops/new");
 });
 
@@ -44,6 +45,7 @@ router.get(
 
 router.get(
   "/:id/edit",
+  isLoggedIn,
   catchErrAsync(async (req, res) => {
     const coffeeshop = await CoffeeShop.findById(req.params.id);
     if (!coffeeshop) {
@@ -60,6 +62,7 @@ router.get(
 
 router.post(
   "/",
+  isLoggedIn,
   validateCoffeeshop,
   catchErrAsync(async (req, res) => {
     const newCoffeeshop = new CoffeeShop(req.body.coffeeshop);
@@ -71,6 +74,7 @@ router.post(
 
 router.put(
   "/:id",
+  isLoggedIn,
   validateCoffeeshop,
   catchErrAsync(async (req, res) => {
     const { id } = req.params;
@@ -82,6 +86,7 @@ router.put(
 
 router.delete(
   "/:id",
+  isLoggedIn,
   catchErrAsync(async (req, res) => {
     const { id } = req.params;
     const coffeeshop = await CoffeeShop.findByIdAndDelete(id);
