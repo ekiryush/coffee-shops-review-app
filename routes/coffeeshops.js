@@ -1,20 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const catchErrAsync = require("../utilities/catchErrAsync");
-const ExpressError = require("../utilities/ExpressError");
 const CoffeeShop = require("../models/coffeeshop.js");
-const { coffeeshopSchema } = require("../schemas.js");
-const { isLoggedIn } = require("../middleware");
-
-const validateCoffeeshop = (req, res, next) => {
-  const { error } = coffeeshopSchema.validate(req.body);
-  if (error) {
-    const message = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(message, 400);
-  } else {
-    next();
-  }
-};
+const { isLoggedIn, isAuthor, validateCoffeeshop } = require("../middleware");
 
 router.get(
   "/",
@@ -37,7 +25,13 @@ router.get(
       req.flash("error", "Cannot find that coffee shop!");
       res.redirect("/coffeeshops");
     } else {
-      await coffeeshop.populate("reviews");
+      await (
+        await coffeeshop.populate({
+          path: "reviews",
+          populate: { path: "author" },
+        })
+      ).populate("author");
+      console.log(coffeeshop);
       res.render("coffeeshops/show", { coffeeshop });
     }
   })
@@ -46,17 +40,18 @@ router.get(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchErrAsync(async (req, res) => {
-    const coffeeshop = await CoffeeShop.findById(req.params.id);
+    const { id } = req.params;
+    const coffeeshop = await CoffeeShop.findById(id);
     if (!coffeeshop) {
       req.flash("error", "Cannot edit that coffee shop!");
       res.redirect("/coffeeshops");
-    } else {
-      res.render("coffeeshops/edit", {
-        coffeeshop,
-        title: `Edit ${coffeeshop.title}`,
-      });
     }
+    res.render("coffeeshops/edit", {
+      coffeeshop,
+      title: `Edit ${coffeeshop.title}`,
+    });
   })
 );
 
@@ -66,6 +61,7 @@ router.post(
   validateCoffeeshop,
   catchErrAsync(async (req, res) => {
     const newCoffeeshop = new CoffeeShop(req.body.coffeeshop);
+    newCoffeeshop.author = req.user._id;
     await newCoffeeshop.save();
     req.flash("success", "Successfully created a new coffee shop!");
     res.redirect(`/coffeeshops/${newCoffeeshop._id}`);
@@ -75,6 +71,7 @@ router.post(
 router.put(
   "/:id",
   isLoggedIn,
+  isAuthor,
   validateCoffeeshop,
   catchErrAsync(async (req, res) => {
     const { id } = req.params;
@@ -87,9 +84,10 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isAuthor,
   catchErrAsync(async (req, res) => {
     const { id } = req.params;
-    const coffeeshop = await CoffeeShop.findByIdAndDelete(id);
+    await CoffeeShop.findByIdAndDelete(id);
     req.flash("success", "Successfully deleted the coffee shop!");
     res.redirect("/coffeeshops");
   })

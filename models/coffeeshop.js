@@ -8,6 +8,10 @@ const CoffeeShopSchema = new mongoose.Schema({
   beverage: String,
   price: Number,
   image: String,
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   reviews: [
     {
       type: mongoose.Schema.Types.ObjectId,

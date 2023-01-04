@@ -10,14 +10,17 @@
       <div class="card-body">
         <h5 class="card-title"><%=coffeeshop.title%></h5>
         <p class="card-text"><%=coffeeshop.description%></p>
+        <p class="card-text">Submitted by <%=coffeeshop.author.username%></p>
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item text-muted"><%=coffeeshop.location%></li>
       </ul>
+
       <ul class="list-group list-group-flush">
         <li class="list-group-item">$<%=coffeeshop.price%> per beverage</li>
       </ul>
       <div class="card-body">
+        <% if ( currentUser && coffeeshop.author.equals(currentUser._id)) { %>
         <a
           class="card-link d-inline"
           href="/coffeeshops/<%=coffeeshop._id%>/edit"
@@ -32,7 +35,7 @@
         >
           <button class="btn btn-danger">Delete</button>
         </form>
-
+        <% } %>
         <a class="card-link d-inline" href="/coffeeshops"
           ><button class="btn btn-secondary">Back to all</button></a
         >
@@ -40,6 +43,7 @@
       <div class="card-footer text-muted">2 days ago</div>
     </div>
   </div>
+  <% if (currentUser) { %>
   <div class="col-md-6 mt-4">
     <h2>Leave a Review</h2>
     <form
@@ -77,15 +81,21 @@
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title">Rating: <%=review.rating%></h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          By <%=review.author.username%>
+        </h6>
         <p class="card-text">Review: <%=review.body%></p>
+        <% if ( currentUser && review.author.equals(currentUser._id)) { %>
         <form
           action="/coffeeshops/<%=coffeeshop._id%>/reviews/<%=review._id%>?_method=DELETE"
           method="POST"
         >
           <button class="btn btn-sm btn-danger">Delete</button>
         </form>
+        <% } %>
       </div>
     </div>
     <% } %>
   </div>
+  <% } %>
 </div>

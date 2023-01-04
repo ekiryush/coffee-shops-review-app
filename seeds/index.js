@@ -25,6 +25,7 @@ const seedDB = async () => {
     const randomNum = Math.floor(Math.random() * 20);
     const price = (Math.random() * 5 + 2.5).toFixed(2);
     const newCoffeeShop = new CoffeeShop({
+      author: "63b4205a73ec176c50bba07e",
       title: `${pickRandom(descriptors)} ${pickRandom(names)}`,
       location: `${pickRandom(locations).city}, ${
         pickRandom(locations).neighbourhood
