@@ -7,7 +7,10 @@ const CoffeeShopSchema = new mongoose.Schema({
   location: String,
   beverage: String,
   price: Number,
-  image: String,
+  image: {
+    url: String,
+    filename: String,
+  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
