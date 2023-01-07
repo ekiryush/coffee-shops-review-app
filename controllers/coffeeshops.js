@@ -63,16 +63,35 @@ module.exports.renderEditForm = async (req, res) => {
   });
 };
 
+module.exports.renderEditImageForm = async (req, res) => {
+  const { id } = req.params;
+  const coffeeshop = await CoffeeShop.findById(id);
+  if (!coffeeshop) {
+    req.flash("error", "Cannot edit that coffee shop!");
+    res.redirect("/coffeeshops");
+  }
+  res.render("coffeeshops/editimage", {
+    coffeeshop,
+    title: `Edit ${coffeeshop.title}`,
+  });
+};
+
 module.exports.updateCoffeeShop = async (req, res) => {
   const { id } = req.params;
   const coffeeshop = await CoffeeShop.findByIdAndUpdate(
     id,
     req.body.coffeeshop
   );
-  // coffeeshop.image = {
-  //   url: req.file.path,
-  //   filename: req.file.filename,
-  // };
+  await coffeeshop.save();
+  req.flash("success", "Successfully saved the changes!");
+  res.redirect(`/coffeeshops/${req.params.id}`);
+};
+
+module.exports.updateCoffeeShopImage = async (req, res) => {
+  const { id } = req.params;
+  const coffeeshop = await CoffeeShop.findByIdAndUpdate(id, {
+    $set: { image: { url: req.file.path, filename: req.file.filename } },
+  });
   await coffeeshop.save();
   req.flash("success", "Successfully saved the changes!");
   res.redirect(`/coffeeshops/${req.params.id}`);

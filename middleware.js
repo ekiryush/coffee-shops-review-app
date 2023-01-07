@@ -33,6 +33,16 @@ module.exports.isAuthor = async (req, res, next) => {
   next();
 };
 
+module.exports.addImage = async (req, res, next) => {
+  const { id } = req.params;
+  const coffeeshop = await CoffeeShop.findById(id);
+  if (!coffeeshop.author.equals(req.user._id)) {
+    req.flash("error", "You do not have permission to do this!");
+    return res.redirect(`/coffeeshops/${id}`);
+  }
+  next();
+};
+
 module.exports.validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
   if (error) {

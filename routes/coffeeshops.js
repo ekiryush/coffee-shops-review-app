@@ -2,7 +2,12 @@ const express = require("express");
 const router = express.Router();
 const coffeeshops = require("../controllers/coffeeshops");
 const catchErrAsync = require("../utilities/catchErrAsync");
-const { isLoggedIn, isAuthor, validateCoffeeshop } = require("../middleware");
+const {
+  isLoggedIn,
+  isAuthor,
+  validateCoffeeshop,
+  addImage,
+} = require("../middleware");
 const multer = require("multer");
 const { storage } = require("../cloudinary");
 const upload = multer({ storage });
@@ -20,12 +25,27 @@ router.get(
   catchErrAsync(coffeeshops.renderEditForm)
 );
 
+router.get(
+  "/:id/editimage",
+  isLoggedIn,
+  isAuthor,
+  catchErrAsync(coffeeshops.renderEditImageForm)
+);
+
 router.post(
   "/",
   isLoggedIn,
   upload.single("image"),
   validateCoffeeshop,
   catchErrAsync(coffeeshops.createCoffeeShop)
+);
+
+router.put(
+  "/image/:id",
+  isLoggedIn,
+  isAuthor,
+  upload.single("image"),
+  catchErrAsync(coffeeshops.updateCoffeeShopImage)
 );
 
 router.put(
