@@ -5,6 +5,17 @@ const CoffeeShopSchema = new mongoose.Schema({
   title: String,
   description: String,
   location: String,
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
   beverage: String,
   price: Number,
   image: {

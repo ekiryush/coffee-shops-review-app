@@ -3,7 +3,6 @@ const Joi = require("joi");
 const coffeeshopSchema = Joi.object({
   coffeeshop: Joi.object({
     title: Joi.string().required().min(4),
-    price: Joi.number().required().min(0),
     location: Joi.string().required().min(4),
     description: Joi.string().required(),
     image: Joi.string(),
