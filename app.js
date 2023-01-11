@@ -19,7 +19,12 @@ const usersRoutes = require("./routes/users");
 const coffeeshopsRoutes = require("./routes/coffeeshops");
 const reviewsRoutes = require("./routes/reviews");
 
-mongoose.connect("mongodb://localhost:27017/coffee-shops", {
+const MongoStore = require("connect-mongo");
+
+// const dbUrl = process.env.DB_URL;
+const dbUrl = "mongodb://localhost:27017/coffee-shops";
+
+mongoose.connect(dbUrl, {
   useNewURLParser: true,
   useUnifiedTopology: true,
 });
@@ -39,7 +44,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  secret: "thisshouldbeabettersecret!",
+  touchAfter: 24 * 60 * 60,
+});
+
+store.on("error", function (e) {
+  console.log("Session store error");
+});
+
 const sessionConfig = {
+  store,
+  name: "session",
   secret: "thisshouldbeabettersecret!",
   resave: false,
   saveUninitialized: true,
